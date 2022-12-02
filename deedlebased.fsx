@@ -18,7 +18,6 @@ let log m =
 
 let path = "C:/LichessData/data/"  
 
-
 type Game() = 
         member val Event = "" with get, set
         member val Site = "" with get, set
@@ -37,7 +36,7 @@ type Game() =
         member val Termination  = "" with get, set
 
 
-let mutable games = 0
+let mutable games = new List<Game>()
 
 let rxKey = new Regex("[A-Z].*?(?= )")
 let rxValue = new Regex("( .*?(?=]))")
@@ -70,55 +69,47 @@ let parseLine (line: string) (game: Game) =
         | "Termination" -> game.Termination <- captureMatch line rxValue 
         | _ -> ()
 
-let writeGame (s: StreamWriter) (g : Game) = 
-    let r = sprintf "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" 
-                g.Event g.Site g.White g.Black g.Result g.UTCDate g.UTCTime g.WhiteElo g.BlackElo g.WhiteRatingDiff g.BlackRatingDiff
-                g.ECO g.Opening g.TimeControl g.Termination
-    s.WriteLine r
-    games <- (games + 1)
-
 let readFile  file : Unit = 
     let timer = new Stopwatch()
     timer.Start()
     let filename = sprintf "%s%s" path file
-    let fimeWithTime = sprintf "%s-%s"  (fileNow()) (file.Replace(".pgn", ".csv"))
-    let csvfilename = sprintf "%s%s" path (fimeWithTime.Replace(".pgn", ".csv"))
     
-    using (File.OpenText(filename)) (fun file1 ->
+    using (File.OpenText(filename)) ( fun file1 ->
 
         let mutable newLine = true;
         let mutable game = new Game()   
         
-        using (new StreamWriter(csvfilename)) (fun csv ->
+        
+        while (newLine) do
+            let line = file1.ReadLine()
+            if (line = null) then
+                games.Add game
+                printfn "games count %i"  games.Count
+                newLine <- false // reached end of file
+            else
+                match (rxEvent.IsMatch line, game.Event = "") with
+                    | true, true ->    parseLine line game
+                    | true, false ->   games.Add game; game <- new Game(); parseLine line game; 
+                                        if games.Count % 100000 = 0 then printfn "games count %i"  games.Count // next game
+                    | false, false -> parseLine line game //next property 
+                    | false, true ->  () //skip line until first Event is found
 
-            while (newLine) do
-                let line = file1.ReadLine()
-                if (line = null) then
-                    writeGame csv game
-                    games <- (games + 1)
-                    printfn "games count %i"  games
-                    newLine <- false // reached end of file
-                else
-                    match (rxEvent.IsMatch line, game.Event = "") with
-                        | true, true ->    parseLine line game
-                        | true, false ->   writeGame csv game; game <- new Game(); parseLine line game; 
-                                            if games % 100000 = 0 then printfn "games count %i"  games // next game
-                        | false, false -> parseLine line game //next property 
-                        | false, true ->  () //skip line until first Event is found
+                log (sprintf "games count %i"  games.Count)
+                //Thread.Sleep 500
+        )
+    printfn "Parsed %i games in %f seconds" games.Count timer.Elapsed.TotalSeconds
 
-                    log (sprintf "games count %i"  games)
-                    //Thread.Sleep 500
-            csv.Flush()
-            )
-    )
-    printfn "Saved %i games in %f seconds" games timer.Elapsed.TotalSeconds
+    let fimeWithTime = sprintf "%s-%s"  (fileNow()) (file.Replace(".pgn", ".csv"))
+    let csvfilename = sprintf "%s%s" path (fimeWithTime.Replace(".pgn", ".csv"))
+
+    let df = games |> Frame.ofRecords
+    df.SaveCsv(csvfilename, separator='|')
+    printfn "Saved %i games in %f" games.Count timer.Elapsed.TotalSeconds
     timer.Stop()
 
 
-//readFile "lichess_db_standard_rated_2015-02.pgn";; //117/139 - using deedle
+//readFile "lichess_db_standard_rated_2015-02.pgn";; 117/139 - using deedle
 
-readFile "lichess_db_standard_rated_2015-02.pgn";; //na/98seconds to write  for 1.5 million games - using streamwriter
-
-//readFile "Nakamura.pgn";;
+readFile "Nakamura.pgn";;
 
 
