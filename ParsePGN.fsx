@@ -117,7 +117,7 @@ let readFile  file : Unit =
 
 //readFile "lichess_db_standard_rated_2015-02.pgn";; //117/139 - using deedle
 
-readFile "lichess_db_standard_rated_2015-02.pgn";; //na/98seconds to write  for 1.5 million games - using streamwriter
+readFile "lichess_db_standard_rated_2019-10.pgn";; //na/98seconds to write  for 1.5 million games - using streamwriter
 
 //readFile "Nakamura.pgn";;
 
