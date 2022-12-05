@@ -1,5 +1,6 @@
 
 
+module PlayerActivity
 #r "nuget: FSharp.Data"
 
 open FSharp.Data
@@ -7,41 +8,37 @@ open System.Threading
 open System
 
 [<Literal>]
-let ActivitySample =  "C:/LichessData/LichessSamples/Activity.json"
+let private ActivitySample =  "C:/LichessData/LichessSamples/Activity.json"
 
-let usersById ="https://lichess.org/api/users"
-
-
-let getGamesUrl user = 
-    sprintf "https://lichess.org/api/games/user/%s?since=1667313709000&moves=false&pertype=rapid,blitz" user
+let private usersById ="https://lichess.org/api/users"
 
 
-let createDate y m d = 
-    let date = sprintf "%i-%i-%i" y (m+1) d
-    DateTime.Parse date
+type private UserProfile = JsonProvider<ActivitySample, InferTypesFromValues=true>
 
-type UserProfile = JsonProvider<ActivitySample, InferTypesFromValues=true>
+let private response (users:string) =
+    let httpBody = TextRequest users
+    Http.Request(
+        usersById,
+        httpMethod = "POST",
+        headers = [ "Accept", "application/text"
+                    "Content-Type", "application/text" ],
+        body = httpBody
+    )
 
-let httpBody : HttpRequestBody = TextRequest "julesbonnot,jimsprout"
+let private convertToTimestamp dt =
+    let epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    let elapsedTime = dt - epoch;
+    (int64)elapsedTime.TotalMilliseconds 
 
-let response =
-            Http.Request(
-                usersById,
-                httpMethod = "POST",
-                headers =
-                    [ "Accept", "application/text"
-                      "Content-Type", "application/text" ],
-                body = httpBody
-                
-            )
-
-let body = 
-   match response.Body with
-            | Text x -> x
-            | _ -> failwith "request failed"
+let getActiveUsers date users = 
+    let ts = convertToTimestamp date
+    let rs = response users 
+    match rs.Body with
+            | Text x -> UserProfile.Parse(x)
+            | _ -> failwith "request failed" 
+    |> Seq.filter (fun x -> x.SeenAt >= 1667313709000L)
+    |> Seq.map (fun x -> x.Username)
 
 
-let users = UserProfile.Parse(body)
 
-users
-|> Seq.map (fun x -> x.SeenAt)
+
