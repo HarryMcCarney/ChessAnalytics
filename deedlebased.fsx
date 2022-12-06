@@ -99,7 +99,6 @@ let readFile  file : Unit =
         )
     printfn "Parsed %i games in %f seconds" games.Count timer.Elapsed.TotalSeconds
 
-    let fimeWithTime = sprintf "%s-%s"  (fileNow()) (file.Replace(".pgn", ".csv"))
     let csvfilename = sprintf "%s%s" path (fimeWithTime.Replace(".pgn", ".csv"))
 
     let df = games |> Frame.ofRecords

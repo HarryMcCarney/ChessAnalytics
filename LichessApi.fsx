@@ -1,7 +1,7 @@
 
-
-module PlayerActivity
+module PlayerActivity 
 #r "nuget: FSharp.Data"
+
 
 open FSharp.Data
 open System.Threading
@@ -30,15 +30,24 @@ let private convertToTimestamp dt =
     let elapsedTime = dt - epoch;
     (int64)elapsedTime.TotalMilliseconds 
 
-let getActiveUsers date users = 
+let getActiveUsers date users :seq<string> = 
+    Thread.Sleep 10000
     let ts = convertToTimestamp date
-    let rs = response users 
-    match rs.Body with
-            | Text x -> UserProfile.Parse(x)
-            | _ -> failwith "request failed" 
-    |> Seq.filter (fun x -> x.SeenAt >= 1667313709000L)
-    |> Seq.map (fun x -> x.Username)
 
-
+    try 
+        let rs = response users
+        printfn "returned users from lichess api"   
+        match rs.Body with
+                | Text x -> let users = UserProfile.Parse(x)
+                            printfn "found %i active users" users.Length
+                            users
+                | _ -> failwith "request failed" 
+        |> Seq.filter (fun x -> match x.SeenAt with | Some y -> y >= ts 
+                                                    | None -> 1=2
+                                                    )
+        |> Seq.map (fun x -> x.Username)
+    with 
+    | :? System.Net.WebException as ex -> printfn "Waiting 60 seconds : %s" (ex.ToString()); Thread.Sleep 90000; [||]
+    
 
 

@@ -1,10 +1,12 @@
+
+module LichessArchive
 #r "nuget: Deedle, 2.5.0"
 open Deedle 
 
-let path = "C:/LichessData/data/" 
-let file = (path + "2022-12-02--22-03-51-lichess_db_standard_rated_2015-02.csv")
+let private path = "C:/LichessData/data/" 
+let private file = (path + "2022-12-02--22-03-51-lichess_db_standard_rated_2015-02.csv")
 
-let headers ="Event (string),\ 
+let private headers ="Event (string),\ 
             Site (string),\ 
             White (string),\ 
             Black (string),\ 
@@ -20,22 +22,23 @@ let headers ="Event (string),\
             TimeControl (string),\ 
             Termination (string)
             "
-let games = Frame.ReadCsv(file,separators="|", hasHeaders=false,schema=headers,inferTypes=false)
+let private games = Frame.ReadCsv(file,separators="|", hasHeaders=false,schema=headers,inferTypes=false)
 
-let whitePlayers = games
-                    |> Frame.getCol "Column3" 
-                    |> Series.map (fun x y -> (string y))
-                    |> Series.values
+let private whitePlayers = games
+                            |> Frame.getCol "Column3" 
+                            |> Series.map (fun x y -> (string y))
+                            |> Series.values
 
-let blackPlayers = games
-                    |> Frame.getCol "Column4" 
-                    |> Series.map (fun x y -> (string y))
-                    |> Series.values
+let private blackPlayers = games
+                            |> Frame.getCol "Column4" 
+                            |> Series.map (fun x y -> (string y))
+                            |> Series.values
 
 
-let players = whitePlayers 
-                |> Seq.append blackPlayers
-                |> Seq.distinct
+let private players = whitePlayers 
+                        |> Seq.append blackPlayers
+                        |> Seq.distinct
 
-players
-|> Seq.length
+
+let getPlayers() = 
+    players
