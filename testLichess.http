@@ -10,3 +10,6 @@ POST https://lichess.org/api/users HTTP/1.1
 Content-Type: application/json
 
 chess-network,jimsprout,julesbonnot
+
+###
+https://lichess.org/api/user/JulesBonnot/rating-history
