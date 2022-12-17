@@ -1,12 +1,14 @@
 #r "nuget: fsharp.data"
+#load "ParsePGN.fsx"
 
 open FSharp.Data
-
+open System.Threading
 
 let  response (user:string) =
-    let userRating = sprintf "https://lichess.org/api/games/user/%s" user
-    Http.Request(
-        userRating,
+    let userGamesUrl = sprintf "https://lichess.org/api/games/user/%s?perf=Rapid&Moves=false" user
+
+    Http.RequestStream(
+        userGamesUrl,
         httpMethod = "GET",
         headers = [ "Accept", "application/text"
                     "Content-Type", "application/text" ]
@@ -16,11 +18,14 @@ let getUserGames user  =
     Thread.Sleep 500
     try 
         let rs = response user
-        printfn "returned ratings from lichess api"   
-        match rs.Body with
-                | Text x ->  (Json.deserialize<VariantRating[]> x) 
-                                |> Array.map (fun x -> getRatingsForVariant user x.name x.points)
-                                |> Array.collect (fun x -> x)
-                | _ -> failwith "request failed" 
+        printfn "returned ratings from lichess api"  
+
+        let reader = new StreamReader(rs.ResponseStream) 
+        ParsePGN.parseStream reader (sprintf "data/%s.csv" user)
+
     with 
-    | :? System.Net.WebException as ex -> printfn "Waiting 60 seconds : %s" (ex.Status.ToString()); Thread.Sleep 90000; [||]
+    | :? System.Net.WebException as ex -> printfn "Waiting 60 seconds : %s" (ex.Status.ToString()); Thread.Sleep 90000; ()
+
+
+
+getUserGames "JulesBonnot";;

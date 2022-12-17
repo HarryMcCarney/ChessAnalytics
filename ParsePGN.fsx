@@ -1,9 +1,5 @@
-#r "nuget: Deedle, 2.5.0"
 open System.IO
-open System.Threading
-open System.Collections.Generic
 open System.Text.RegularExpressions
-open Deedle 
 open System.Diagnostics
 open System
 
@@ -77,6 +73,32 @@ let writeGame (s: StreamWriter) (g : Game) =
     s.WriteLine r
     games <- (games + 1)
 
+let parseStream (streamReader: StreamReader) (csvfilename : string) = 
+    let mutable newLine = true;
+    let mutable game = new Game() 
+
+    using (new StreamWriter(csvfilename)) (fun csv ->
+
+        while (newLine) do
+            let line = streamReader.ReadLine()
+            if (line = null) then
+                writeGame csv game
+                games <- (games + 1)
+                printfn "games count %i"  games
+                newLine <- false // reached end of file
+            else
+                match (rxEvent.IsMatch line, game.Event = "") with
+                    | true, true ->    parseLine line game
+                    | true, false ->   writeGame csv game; game <- new Game(); parseLine line game; 
+                                        if games % 100000 = 0 then printfn "games count %i"  games // next game
+                    | false, false -> parseLine line game //next property 
+                    | false, true ->  () //skip line until first Event is found
+
+                log (sprintf "games count %i"  games)
+                //Thread.Sleep 500
+        csv.Flush()
+        )
+
 let readFile  file : Unit = 
     let timer = new Stopwatch()
     timer.Start()
@@ -85,39 +107,15 @@ let readFile  file : Unit =
     let csvfilename = sprintf "%s%s" path (fimeWithTime.Replace(".pgn", ".csv"))
     
     using (File.OpenText(filename)) (fun file1 ->
-
-        let mutable newLine = true;
-        let mutable game = new Game()   
-        
-        using (new StreamWriter(csvfilename)) (fun csv ->
-
-            while (newLine) do
-                let line = file1.ReadLine()
-                if (line = null) then
-                    writeGame csv game
-                    games <- (games + 1)
-                    printfn "games count %i"  games
-                    newLine <- false // reached end of file
-                else
-                    match (rxEvent.IsMatch line, game.Event = "") with
-                        | true, true ->    parseLine line game
-                        | true, false ->   writeGame csv game; game <- new Game(); parseLine line game; 
-                                            if games % 100000 = 0 then printfn "games count %i"  games // next game
-                        | false, false -> parseLine line game //next property 
-                        | false, true ->  () //skip line until first Event is found
-
-                    log (sprintf "games count %i"  games)
-                    //Thread.Sleep 500
-            csv.Flush()
-            )
-    )
+        parseStream file1 csvfilename
+        )
     printfn "Saved %i games in %f seconds" games timer.Elapsed.TotalSeconds
     timer.Stop()
 
 
 //readFile "lichess_db_standard_rated_2015-02.pgn";; //117/139 - using deedle
 
-readFile "lichess_db_standard_rated_2019-10.pgn";; //na/98seconds to write  for 1.5 million games - using streamwriter
+//readFile "Morphy.pgn";; //na/98seconds to write  for 1.5 million games - using streamwriter
 
 //readFile "Nakamura.pgn";;
 
