@@ -1,5 +1,5 @@
 
-module PlayerActivity 
+module ActiveUsers 
 #r "nuget: FSharp.Data"
 
 
@@ -45,6 +45,7 @@ let getActiveUsers date users :seq<string> =
         |> Seq.filter (fun x -> match x.SeenAt with | Some y -> y >= ts 
                                                     | None -> 1=2
                                                     )
+        |> Seq.filter(fun x -> x.Perfs.Rapid.Games > 100)
         |> Seq.map (fun x -> x.Username)
     with 
     | :? System.Net.WebException as ex -> printfn "Waiting 60 seconds : %s" (ex.ToString()); Thread.Sleep 90000; [||]

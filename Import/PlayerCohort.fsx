@@ -1,10 +1,10 @@
-#load "LichessApi.fsx"
-#load "FindPlayers.fsx"
+#load "LichessArchive.fsx"
+#load "ActiveUsers.fsx"
 #r "nuget: Deedle, 2.5.0"
 
 open Deedle 
-open PlayerActivity
-open LichessArchive 
+open LichessArchive
+open ActiveUsers 
 open System
 
 let players : seq<string> = LichessArchive.getPlayers()
