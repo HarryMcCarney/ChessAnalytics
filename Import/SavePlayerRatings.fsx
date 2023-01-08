@@ -1,9 +1,9 @@
 
-#load "RatingAnalysis.fsx"
+#load "PlayerRating.fsx"
 
 open PlayerRating
 
-let file = "C:/LichessData/data/" + "2022-12-06--19-46-12-playercohort.csv"
+let file = "C:/LichessData/data/" + "2023-1-07--13-41-41-playercohort.csv"
 
 let users = Frame.ReadCsv(file,separators="|", hasHeaders=true,inferTypes=true)
 
