@@ -18,8 +18,8 @@ let main playerFile =
     let files = Directory.GetFiles "C:/LichessData/data/games" 
                 |> Seq.map (fun x -> (Path.GetFileName x).Replace(".csv", ""))
     
-    printfn "%A" files
-                
+    printfn "done %i file of %i players" (files |> Seq.toArray |> Array.length)  (csv.Rows |> Seq.toArray |>  Array.length)
+                  
     csv.Rows
     |> Seq.map (fun r -> { UserName = (r.GetColumn "UserName")})
     |> Seq.filter (fun f -> not (files |> Seq.contains f.UserName))
