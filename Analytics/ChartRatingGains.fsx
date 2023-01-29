@@ -140,7 +140,6 @@ let normC =
     |> Seq.mean
 
 
-let discreteDist = DiscreteDistribution.bernoulli mean std
 
 let probs = results 
             |> Seq.map snd

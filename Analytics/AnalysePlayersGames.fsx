@@ -110,6 +110,8 @@ let fittedValues =
     |> Array.map (fun x -> fittingFunctionLinearLS x)
 
 
+GoodnessOfFit.calculateDeterminationFromValue y fittedValues
+
 [   
 Chart.Point(values);
 fittingLS

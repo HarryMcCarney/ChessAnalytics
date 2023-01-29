@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+
+    <PackageLicenseUrl>https://github.com/foo/bar/blob/master/License.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://foo.github.io/bar/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/foo/bar/</RepositoryUrl>
+    <FsDocsLogoLink>https://fsharp.org</FsDocsLogoLink>
+    <FsDocsLicenseLink>https://github.com/foo/bar/blob/master/License.txt</FsDocsLicenseLink>
+    <FsDocsReleaseNotesLink>https://github.com/foo/bar/blob/master/release-notes.md</FsDocsReleaseNotesLink>
+    <FsDocsNavbarPosition>fixed-left</FsDocsNavbarPosition>
+    <FsDocsWarnOnMissingDocs>true</FsDocsWarnOnMissingDocs>
+    <FsDocsTheme>default</FsDocsTheme>
+  </PropertyGroup>
+  <ItemGroup>
+   
+  </ItemGroup>
+
+</Project>
