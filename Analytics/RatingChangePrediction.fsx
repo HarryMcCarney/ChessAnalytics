@@ -101,9 +101,9 @@ let ratings =
 
 let data  =
         openings
-        |> Seq.map (fun (name, o) ->  o, ratings |> Seq.tryFind (fun (n,r)  -> n = name) |> snd)
+        |> Seq.map (fun (name, o) ->  o, (ratings |> Seq.tryFind (fun (n,r)  -> n = name)))
         |> Seq.filter (fun (o,r) -> r.IsSome )
-        |> Seq.map(fun (o,r)-> o, r.Value)
+        |> Seq.map(fun (o,r)-> o, r.Value |> snd)
 
 
 Chart.Point data

@@ -107,8 +107,7 @@ let fittingLS =
 let fittedValues = 
     x
     |> Seq.toArray
-    |> Array.map (fun x -> fittingFunctionLinearLS x)
-
+    |> Array.map (fun v -> fittingFunctionLinearLS v)
 
 GoodnessOfFit.calculateDeterminationFromValue y fittedValues
 
