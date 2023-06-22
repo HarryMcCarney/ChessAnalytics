@@ -57,18 +57,3 @@ let getUserRatings user  =
 
 
 
-
-
-                
-
-
-//0207 7851713
-
-
-
-
-
-
-
-
-
