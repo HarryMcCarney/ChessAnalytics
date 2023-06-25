@@ -68,10 +68,6 @@ let truncatedTenPercentMean =
             |> Seq.map(fun (m, r) -> (m, (r |> Seq.meanTruncatedBy(fun x -> x.Rating)  0.1 )))
             |> Seq.sortBy fst
 
-
-
-
-
 let trackingMedian = 
             csv.Rows
             |> Seq.map (fun r -> 
@@ -85,8 +81,6 @@ let trackingMedian =
             |> Seq.sortBy fst
 
 
-
-
 let dates = (trackingMean |> Seq.map fst)
 let means = (trackingMean |> Seq.map snd)
 let medians = (trackingMedian |> Seq.map snd)
@@ -96,7 +90,7 @@ let meanLine = Chart.Line(dates ,means, Name="Means")
 let medianLine = Chart.Line(dates ,medians, Name ="Medians")
 let truncatedLine = Chart.Line(dates ,truncatedMeans, Name ="Truncated Ten Percent means")
 
-
+//Mean and Median ratings change
 [meanLine; medianLine]
 |> Chart.combine
 |> Chart.withDescription (ChartDescription.create "Average Rapid rating for 5k players with more than 100 rapid games" "Shows inflation and deflation. Likely due to influx of beginners during lockdowns")
@@ -104,7 +98,6 @@ let truncatedLine = Chart.Line(dates ,truncatedMeans, Name ="Truncated Ten Perce
 
 let getPercentiles d = 
     [|0.01 .. 0.01 .. 1.|] |> Array.map(fun y -> Quantile.mode y d)
-
 
 let percentiles = results
                 |> Seq.map (fun (x, y)-> y )
@@ -134,11 +127,9 @@ let density (xs: seq<float>) =
         )
 
 
-
 let normC = 
     Seq.init 10 (fun _ -> dist.Sample())
     |> Seq.mean
-
 
 
 let probs = results 

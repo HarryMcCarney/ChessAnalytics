@@ -59,8 +59,13 @@ let buildPlayer (f: string) =
 
 let openings = 
     files 
-    |> Seq.truncate 50
-    |> Seq.map(fun f -> buildPlayer f)
+    |> Seq.truncate 1000
+    |> Seq.map(fun f -> 
+        try Some (buildPlayer f )
+        with 
+        | :? System.Exception -> printfn "Invalid CSV file"; None
+        )
+    |> Seq.choose(fun o -> o)
     |> Seq.concat
 
 
