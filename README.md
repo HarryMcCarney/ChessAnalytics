@@ -1,11 +1,12 @@
 # An empirical approach to chess improvement
 
 A "work in progress" to try and discover if players of online chess improve, and what do the ones who improve do. 
+
 Having played a lot of online chess myself, and found improving my rating to be pretty tricky, I wondered if most people are actually getting better. 
 
 Chess improvement is a huge field and focuses on things like opening theory. Books, videos, and blogs try to analytically prove that the properties of a particular opening or strategy will give an advantage. But its very hard to know what works - particularly for players of different standards. 
 
-Lichess has a fairly open api with game and rating histories for all players, so it's now possible to take a purely empirical approach to chess improvement. 
+However, Lichess has a fairly open api with game and rating histories for all players, so it's now possible to take a purely empirical approach to chess improvement. 
 
 Instead of asking, "How do I improve?", we can ask "What do players who improve do?".
 
@@ -57,9 +58,19 @@ This is calculated in Analytics\RatingChangePrediction.fsx. It works in the foll
 3. Calculate the number of different openings in each chunk of 100 games and express as a ratio
 4. Get their average ratio over all chunks. 
 
-This is very crude and probably wrong/misleading in various ways, but for what its worth, is gives the following result
+This is very crude and probably wrong/misleading in various ways, but for what its worth, it gives the following result
 
 ![Alt text](image-3.png)
+
+AS we can see there doesnt appear to be any correlation. This may not be true for all rating ranges but nothing is jumping out here.
+
+## Limitations
+There are many other factors behind the data, aka confounding variables, which lichess doesnt give us. Players age is almost certainly the most correlated with rating gain but lichess doesnt record this. 
+And of course how hard people are working on their chess behind the scenes. People changing opening frequently, and those specialising, are probably equally likely to reading books etc. Perphas this effect is therefore balanced out in the large sample. Much better and more through analysis before this empirical approach could be of practocal use. But perhaps this sketch might intersting for someone.
+
+
+
+
 
 
 
